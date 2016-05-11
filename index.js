@@ -32,10 +32,12 @@ function Decoder (opts) {
   var marksSeen = 0
   var spacesSeen = 0
 
+  // TODO: replace with detecting when the input stream ends
   this.done = function () {
     this.decideOnSymbol()
   }
 
+  // TODO: replace with getting an audio buffer frame from input stream
   this.handleFrame = function (frame) {
     var s = hasSpace(frame)
     var m = hasMark(frame)
@@ -94,6 +96,9 @@ function Decoder (opts) {
       this.push(new Buffer('0'))
     }
     spacesSeen = marksSeen = 0
+
+    // push clock ahead a frame, since we've already trodden into the next
+    // symbol
     clock = opts.samplesPerFrame / opts.sampleRate
   }
 }
