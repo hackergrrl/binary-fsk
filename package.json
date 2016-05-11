@@ -9,7 +9,9 @@
   "scripts": {
     "test": "tape test/*.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "readable-stream": "^2.1.2"
+  },
   "devDependencies": {
     "tape": "*"
   },

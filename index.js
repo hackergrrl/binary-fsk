@@ -1,8 +1,18 @@
+var util = require('util')
 var goertzel = require('goertzel')
+var Readable = require('readable-stream')
+
+util.inherits(Decoder, Readable)
 
 function Decoder (opts) {
   // TODO: instanceof
   // TODO: opts checks
+
+  Readable.call(this)
+
+  // TODO: will this get me in trouble once I'm doing fully async?
+  this._read = function (n) {
+  }
 
   var hasSpace = goertzel({
     targetFrequency: opts.space,
@@ -22,6 +32,10 @@ function Decoder (opts) {
   var marksSeen = 0
   var spacesSeen = 0
 
+  this.done = function () {
+    this.decideOnSymbol()
+  }
+
   this.handleFrame = function (frame) {
     var s = hasSpace(frame)
     var m = hasMark(frame)
@@ -31,7 +45,7 @@ function Decoder (opts) {
     else if (!s && m) bit = 1
     else throw new Error('no match: space', s, ' mark', m)
 
-    // console.error('bit', bit, '  clock', clock)
+    console.error('bit', bit, '  clock', clock)
 
     if (state === 'preamble:space') {
       if (bit === 1) {
@@ -60,23 +74,27 @@ function Decoder (opts) {
       else marksSeen++
 
       if (clock >= 1) {
-        // console.error('saw ', spacesSeen, 'spaces and', marksSeen, 'marks')
-
-        if (marksSeen > spacesSeen) {
-          console.log('SYMBOL: 1')
-          console.error('error ---------> ', spacesSeen)
-        } else {
-          console.log('SYMBOL: 0')
-          console.error('error ---------> ', marksSeen)
-        }
-
-        spacesSeen = marksSeen = 0
-        clock = opts.samplesPerFrame / opts.sampleRate
+        this.decideOnSymbol()
       }
     }
 
     clock += opts.samplesPerFrame / opts.sampleRate
     totalTime += opts.samplesPerFrame / opts.sampleRate
+  }
+
+  this.decideOnSymbol = function () {
+    // console.error('saw ', spacesSeen, 'spaces and', marksSeen, 'marks')
+    if (marksSeen > spacesSeen) {
+      console.log('SYMBOL: 1')
+      console.error('error ---------> ', spacesSeen)
+      this.push(new Buffer('1'))
+    } else {
+      console.log('SYMBOL: 0')
+      console.error('error ---------> ', marksSeen)
+      this.push(new Buffer('0'))
+    }
+    spacesSeen = marksSeen = 0
+    clock = opts.samplesPerFrame / opts.sampleRate
   }
 }
 

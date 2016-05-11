@@ -54,9 +54,15 @@ var decoder = new Decoder({
   samplesPerFrame: samplesPerFrame
 })
 
+decoder.on('data', function (data) {
+  console.log('got data', data.toString())
+})
+
 var i = 0
 while (i < data.length) {
   var frame = data.slice(i, i + samplesPerFrame)
   i += samplesPerFrame
   decoder.handleFrame(frame)
 }
+decoder.done()
+
