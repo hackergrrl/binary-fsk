@@ -1,0 +1,17 @@
+{
+  "name": "binary-fsk-decoder",
+  "description": "decoder for binary frequency-shift keying",
+  "version": "0.0.0",
+  "repository": {
+    "url": "git://github.com/noffle/binary-fsk-decoder.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tape": "*"
+  },
+  "license": "ISC"
+}
