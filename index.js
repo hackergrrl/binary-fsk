@@ -34,7 +34,7 @@ function Decoder (opts) {
 
   // TODO: replace with detecting when the input stream ends
   this.done = function () {
-    this.decideOnSymbol()
+    decideOnSymbol()
   }
 
   // TODO: replace with getting an audio buffer frame from input stream
@@ -76,7 +76,7 @@ function Decoder (opts) {
       else marksSeen++
 
       if (clock >= 1) {
-        this.decideOnSymbol()
+        decideOnSymbol()
       }
     }
 
@@ -84,7 +84,7 @@ function Decoder (opts) {
     totalTime += opts.samplesPerFrame / opts.sampleRate
   }
 
-  this.decideOnSymbol = function () {
+  decideOnSymbol = function () {
     // console.error('saw ', spacesSeen, 'spaces and', marksSeen, 'marks')
     if (marksSeen > spacesSeen) {
       console.log('SYMBOL: 1')
@@ -100,7 +100,7 @@ function Decoder (opts) {
     // push clock ahead a frame, since we've already trodden into the next
     // symbol
     clock = opts.samplesPerFrame / opts.sampleRate
-  }
+  }.bind(this)
 }
 
 module.exports = Decoder
