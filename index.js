@@ -32,6 +32,9 @@ function Decoder (opts) {
   var marksSeen = 0
   var spacesSeen = 0
 
+  var bytePos = 0
+  var byteAccum = 0
+
   // TODO: replace with detecting when the input stream ends
   this.done = function () {
     decideOnSymbol()
@@ -47,7 +50,7 @@ function Decoder (opts) {
     else if (!s && m) bit = 1
     else throw new Error('no match: space', s, ' mark', m)
 
-    console.error('bit', bit, '  clock', clock)
+    // console.error('bit', bit, '  clock', clock)
 
     if (state === 'preamble:space') {
       if (bit === 1) {
@@ -59,9 +62,9 @@ function Decoder (opts) {
     }
 
     else if (state === 'preamble:mark') {
-      if (bit !== 1) {
-        throw new Error('got non-mark while in preamble:mark')
-      }
+      // if (bit !== 1) {
+      //   throw new Error('got non-mark while in preamble:mark')
+      // }
       if (clock >= 1) {
         console.error('preamble:mark done @', totalTime)
         console.error('starting decode')
@@ -86,16 +89,36 @@ function Decoder (opts) {
 
   decideOnSymbol = function () {
     // console.error('saw ', spacesSeen, 'spaces and', marksSeen, 'marks')
+    var bit
+    var error
+
     if (marksSeen > spacesSeen) {
-      console.log('SYMBOL: 1')
-      console.error('error ---------> ', spacesSeen)
-      this.push(new Buffer('1'))
+      error = spacesSeen
+      bit = 1
     } else {
-      console.log('SYMBOL: 0')
-      console.error('error ---------> ', marksSeen)
-      this.push(new Buffer('0'))
+      error = marksSeen
+      bit = 0
     }
     spacesSeen = marksSeen = 0
+    console.error('SYMBOL:', bit, '  (err =', error + ')')
+
+    // apply bit to the high end of the byte accumulator
+    byteAccum >>= 1
+    byteAccum |= (bit << 7)
+    bytePos++
+
+    // emit byte if finished
+    if (bytePos === 8) {
+      var buf = new Buffer(1)
+      buf[0] = byteAccum
+
+      this.push(buf)
+
+      byteAccum = 0
+      bytePos = 0
+    } else if (bytePos > 8) {
+      throw new Error('somehow accumulated more than 8 bits!')
+    }
 
     // push clock ahead a frame, since we've already trodden into the next
     // symbol
