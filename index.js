@@ -17,13 +17,15 @@ function Decoder (opts) {
   var hasSpace = goertzel({
     targetFrequency: opts.space,
     sampleRate: opts.sampleRate,
-    samplesPerFrame: opts.samplesPerFrame
+    samplesPerFrame: opts.samplesPerFrame,
+    threshold: 0.5
   })
 
   var hasMark = goertzel({
     targetFrequency: opts.mark,
     sampleRate: opts.sampleRate,
-    samplesPerFrame: opts.samplesPerFrame
+    samplesPerFrame: opts.samplesPerFrame,
+    threshold: 0.5
   })
 
   var state = 'preamble:space'
@@ -48,7 +50,7 @@ function Decoder (opts) {
     var bit
     if (s && !m) bit = 0
     else if (!s && m) bit = 1
-    else throw new Error('no match: space', s, ' mark', m)
+    else console.error('no match: space', s, ' mark', m)
 
     // console.error('bit', bit, '  clock', clock)
 

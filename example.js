@@ -30,13 +30,11 @@ function sinSamples (hz, samples, data) {
 }
 
 var msg = 'hello'.split('')
-// for (var i=0; i < 100; i++) {
-//   msg.push(Math.random() < 0.5 ? 1 : 0)
-// }
 
 var data = []
 
-// sinSamples(space, 1249, data)
+// make pre-amble longer
+sinSamples(space, 30, data)
 
 // preamble space (>= 1 baud (1 sampleRate))
 sinSamples(space, sampleRate, data)
@@ -44,6 +42,8 @@ sinSamples(space, sampleRate, data)
 // begin space symbol (== 1 baud (1 sampleRate))
 sinSamples(mark, sampleRate, data)
 
+
+// TODO: basis for binary-fsk-encoder
 msg.forEach(function (ch) {
   ch = ch.charCodeAt(0)
   for (var i=0; i < 8; i++) {
