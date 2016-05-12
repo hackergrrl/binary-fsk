@@ -28,6 +28,8 @@ function Decoder (opts) {
     threshold: 0.5
   })
 
+  var symbolDuration = 1 / opts.baud
+  var frameDuration = opts.samplesPerFrame / opts.sampleRate
   var state = 'preamble:space'
   var clock = 0
   var totalTime = 0
@@ -52,7 +54,7 @@ function Decoder (opts) {
     else if (!s && m) bit = 1
     else console.error('no match: space', s, ' mark', m)
 
-    // console.error('bit', bit, '  clock', clock)
+    console.error('bit', bit, '  clock', clock)
 
     if (state === 'preamble:space') {
       if (bit === 1) {
@@ -67,7 +69,7 @@ function Decoder (opts) {
       // if (bit !== 1) {
       //   throw new Error('got non-mark while in preamble:mark')
       // }
-      if (clock >= 1) {
+      if (clock >= symbolDuration) {
         console.error('preamble:mark done @', totalTime)
         console.error('starting decode')
         clock = 0
@@ -80,13 +82,13 @@ function Decoder (opts) {
       if (bit === 0) spacesSeen++
       else marksSeen++
 
-      if (clock >= 1) {
+      if (clock >= symbolDuration) {
         decideOnSymbol()
       }
     }
 
-    clock += opts.samplesPerFrame / opts.sampleRate
-    totalTime += opts.samplesPerFrame / opts.sampleRate
+    clock += frameDuration
+    totalTime += frameDuration
   }
 
   decideOnSymbol = function () {
@@ -124,7 +126,7 @@ function Decoder (opts) {
 
     // push clock ahead a frame, since we've already trodden into the next
     // symbol
-    clock = opts.samplesPerFrame / opts.sampleRate
+    clock = frameDuration * error
   }.bind(this)
 }
 

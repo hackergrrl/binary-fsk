@@ -6,7 +6,7 @@ var samplesPerFrame = 100
 var space = 324
 var mark = 884
 
-var baud = 1
+var baud = 20
 
 
 function sin (hz, t) {
@@ -29,18 +29,18 @@ function sinSamples (hz, samples, data) {
   }
 }
 
-var msg = 'hello'.split('')
+var msg = 'hello world!'.split('')
 
 var data = []
 
 // make pre-amble longer
-sinSamples(space, 30, data)
+// sinSamples(space, 30, data)
 
 // preamble space (>= 1 baud (1 sampleRate))
-sinSamples(space, sampleRate, data)
+sinSamples(space, sampleRate / baud, data)
 
 // begin space symbol (== 1 baud (1 sampleRate))
-sinSamples(mark, sampleRate, data)
+sinSamples(mark, sampleRate / baud, data)
 
 
 // TODO: basis for binary-fsk-encoder
@@ -50,13 +50,14 @@ msg.forEach(function (ch) {
     var bit = ch & 0x1
     ch >>= 1
     // console.log('encoded', bit)
-    sinSamples(bit === 0 ? space : mark, sampleRate, data)
+    sinSamples(bit === 0 ? space : mark, sampleRate / baud, data)
   }
 })
 
 var decoder = new Decoder({
   mark: mark,
   space: space,
+  baud: baud,
   sampleRate: sampleRate,
   samplesPerFrame: samplesPerFrame
 })
