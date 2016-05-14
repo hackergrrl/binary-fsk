@@ -6,6 +6,7 @@ var samplesPerFrame = 100
 var space = 324
 var mark = 884
 
+// NOTE: certain bauds just don't work (e.g. 13)
 var baud = 20
 
 

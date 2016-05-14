@@ -5,8 +5,15 @@ var Readable = require('readable-stream')
 util.inherits(Decoder, Readable)
 
 function Decoder (opts) {
-  // TODO: instanceof
-  // TODO: opts checks
+  if (!(this instanceof Decoder)) return new Decoder(opts)
+
+  opts = opts || {}
+
+  if (!opts.baud) throw new Error('must specify opts.baud')
+  if (!opts.space) throw new Error('must specify opts.space')
+  if (!opts.mark) throw new Error('must specify opts.mark')
+  if (!opts.sampleRate) throw new Error('must specify opts.sampleRate')
+  if (!opts.samplesPerFrame) throw new Error('must specify opts.samplesPerFrame')
 
   Readable.call(this)
 
