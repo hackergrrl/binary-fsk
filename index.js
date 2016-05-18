@@ -1,8 +1,8 @@
 var util = require('util')
 var goertzel = require('goertzel')
-var Readable = require('readable-stream')
+var Transform = require('stream').Transform
 
-util.inherits(Decoder, Readable)
+util.inherits(Decoder, Transform)
 
 function Decoder (opts) {
   if (!(this instanceof Decoder)) return new Decoder(opts)
@@ -15,11 +15,7 @@ function Decoder (opts) {
   if (!opts.sampleRate) throw new Error('must specify opts.sampleRate')
   if (!opts.samplesPerFrame) throw new Error('must specify opts.samplesPerFrame')
 
-  Readable.call(this)
-
-  // TODO: will this get me in trouble once I'm doing fully async?
-  this._read = function (n) {
-  }
+  Transform.call(this, { objectMode: true })
 
   var hasSpace = goertzel({
     targetFrequency: opts.space,
@@ -46,12 +42,15 @@ function Decoder (opts) {
   var bytePos = 0
   var byteAccum = 0
 
-  // TODO: replace with detecting when the input stream ends
-  this.done = function () {
-    decideOnSymbol()
+  this._transform = function (chunk, enc, cb) {
+    this.handleFrame(chunk)
+    cb(null)
   }
 
-  // TODO: replace with getting an audio buffer frame from input stream
+  this.on('end', function () {
+    decideOnSymbol()
+  })
+
   this.handleFrame = function (frame) {
     var s = hasSpace(frame)
     var m = hasMark(frame)
@@ -61,7 +60,7 @@ function Decoder (opts) {
     else if (!s && m) bit = 1
     else console.error('no match: space', s, ' mark', m)
 
-    console.error('bit', bit, '  clock', clock)
+    // console.error('bit', bit, '  clock', clock)
 
     if (state === 'preamble:space') {
       if (bit === 1) {
@@ -111,7 +110,7 @@ function Decoder (opts) {
       bit = 0
     }
     spacesSeen = marksSeen = 0
-    console.error('SYMBOL:', bit, '  (err =', error + ')')
+    // console.error('SYMBOL:', bit, '  (err =', error + ')')
 
     // apply bit to the high end of the byte accumulator
     byteAccum >>= 1
