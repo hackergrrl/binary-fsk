@@ -149,3 +149,41 @@ test('high frequency', function (t) {
   }
   decoder.end()
 })
+
+test('non-standard opts', function (t) {
+  var opts = {
+    sampleRate: 8000,
+    samplesPerFrame: 200,
+    space: 481,
+    mark: 1390,
+    baud: 10
+  }
+
+  var msg = 'hello world!'.split('')
+  var data = []
+
+  writePreamble(opts, data)
+
+  writeEncodedMessage(msg, opts, data)
+
+  var decoder = new Decoder({
+    mark: opts.mark,
+    space: opts.space,
+    baud: opts.baud,
+    sampleRate: opts.sampleRate,
+    samplesPerFrame: opts.samplesPerFrame
+  })
+
+  decoder.pipe(concat(function (data) {
+    t.equal(data.toString(), 'hello world!')
+    t.end()
+  }))
+
+  var i = 0
+  while (i < data.length) {
+    var frame = data.slice(i, i + opts.samplesPerFrame)
+    i += opts.samplesPerFrame
+    decoder.write(frame)
+  }
+  decoder.end()
+})
