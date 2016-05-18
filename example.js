@@ -1,4 +1,4 @@
-var Decoder = require('./index')
+var fsk = require('./index')
 
 var sampleRate = 8000
 var samplesPerFrame = 100
@@ -55,7 +55,7 @@ msg.forEach(function (ch) {
   }
 })
 
-var decoder = new Decoder({
+var decoder = fsk.createDecodeStream({
   mark: mark,
   space: space,
   baud: baud,

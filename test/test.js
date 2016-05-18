@@ -1,4 +1,4 @@
-var Decoder = require('../index')
+var fsk = require('../index')
 var test = require('tape')
 var concat = require('concat-stream')
 
@@ -49,7 +49,7 @@ test('basic', function (t) {
 
   writeEncodedMessage(msg, opts, data)
 
-  var decoder = new Decoder({
+  var decoder = fsk.createDecodeStream({
     mark: opts.mark,
     space: opts.space,
     baud: opts.baud,
@@ -90,7 +90,7 @@ test('extra long preamble', function (t) {
 
   writeEncodedMessage(msg, opts, data)
 
-  var decoder = new Decoder({
+  var decoder = fsk.createDecodeStream({
     mark: opts.mark,
     space: opts.space,
     baud: opts.baud,
@@ -128,7 +128,7 @@ test('high frequency', function (t) {
 
   writeEncodedMessage(msg, opts, data)
 
-  var decoder = new Decoder({
+  var decoder = fsk.createDecodeStream({
     mark: opts.mark,
     space: opts.space,
     baud: opts.baud,
@@ -166,7 +166,7 @@ test('non-standard opts', function (t) {
 
   writeEncodedMessage(msg, opts, data)
 
-  var decoder = new Decoder({
+  var decoder = fsk.createDecodeStream({
     mark: opts.mark,
     space: opts.space,
     baud: opts.baud,
