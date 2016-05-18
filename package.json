@@ -1,9 +1,9 @@
 {
-  "name": "binary-fsk-decoder",
+  "name": "binary-fsk",
   "description": "decoder for binary frequency-shift keying",
   "version": "0.0.0",
   "repository": {
-    "url": "git://github.com/noffle/binary-fsk-decoder.git"
+    "url": "git://github.com/noffle/binary-fsk.git"
   },
   "main": "index.js",
   "scripts": {
