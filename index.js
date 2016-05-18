@@ -59,14 +59,14 @@ function Decoder (opts) {
     var bit
     if (s && !m) bit = 0
     else if (!s && m) bit = 1
-    else console.error('no match: space', s, ' mark', m)
+    // else console.error('no match: space', s, ' mark', m)
 
     // console.error('bit', bit, '  clock', clock)
 
     if (state === 'preamble:space') {
       if (bit === 1) {
-        console.error('preamble:space done @', totalTime)
-        console.error('starting mark clock')
+        // console.error('preamble:space done @', totalTime)
+        // console.error('starting mark clock')
         clock = 0
         state = 'preamble:mark'
       }
@@ -77,8 +77,8 @@ function Decoder (opts) {
       //   throw new Error('got non-mark while in preamble:mark')
       // }
       if (clock >= symbolDuration) {
-        console.error('preamble:mark done @', totalTime)
-        console.error('starting decode')
+        // console.error('preamble:mark done @', totalTime)
+        // console.error('starting decode')
         clock = 0
         state = 'decode'
         return
