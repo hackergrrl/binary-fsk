@@ -47,9 +47,10 @@ function Decoder (opts) {
     cb(null)
   }
 
-  this.on('end', function () {
+  this._flush = function (done) {
     decideOnSymbol()
-  })
+    done()
+  }
 
   this.handleFrame = function (frame) {
     var s = hasSpace(frame)
