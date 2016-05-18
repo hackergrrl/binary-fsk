@@ -13,6 +13,7 @@
     "readable-stream": "^2.1.2"
   },
   "devDependencies": {
+    "concat-stream": "^1.5.1",
     "tape": "*"
   },
   "license": "ISC"
