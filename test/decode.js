@@ -42,33 +42,17 @@ test('basic', function (t) {
     baud: 1
   }
 
-  var msg = 'hello world!'.split('')
-  var data = []
+  var encoder = fsk.createEncodeStream(opts)
+  var decoder = fsk.createDecodeStream(opts)
 
-  writePreamble(opts, data)
+  encoder.pipe(decoder)
 
-  writeEncodedMessage(msg, opts, data)
-
-  var decoder = fsk.createDecodeStream({
-    mark: opts.mark,
-    space: opts.space,
-    baud: opts.baud,
-    sampleRate: opts.sampleRate,
-    samplesPerFrame: opts.samplesPerFrame
-  })
+  encoder.end('hello world!')
 
   decoder.pipe(concat(function (data) {
     t.equal(data.toString(), 'hello world!')
     t.end()
   }))
-
-  var i = 0
-  while (i < data.length) {
-    var frame = data.slice(i, i + opts.samplesPerFrame)
-    i += opts.samplesPerFrame
-    decoder.write(frame)
-  }
-  decoder.end()
 })
 
 test('extra long preamble', function (t) {
