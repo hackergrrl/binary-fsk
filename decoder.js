@@ -12,8 +12,12 @@ function Decoder (opts) {
   if (!opts.baud) throw new Error('must specify opts.baud')
   if (!opts.space) throw new Error('must specify opts.space')
   if (!opts.mark) throw new Error('must specify opts.mark')
-  if (!opts.sampleRate) throw new Error('must specify opts.sampleRate')
-  if (!opts.samplesPerFrame) throw new Error('must specify opts.samplesPerFrame')
+  opts.sampleRate = opts.sampleRate || 8000
+  opts.samplesPerFrame = opts.samplesPerFrame || getMinSamplesPerFrame(opts.sampleRate, opts.baud)
+
+  function getMinSamplesPerFrame (sampleRate, baud) {
+    return Math.floor(sampleRate / baud / 5)
+  }
 
   Transform.call(this, { objectMode: true })
 
