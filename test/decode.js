@@ -55,6 +55,27 @@ test('basic', function (t) {
   }))
 })
 
+test('high baud high freq', function (t) {
+  var opts = {
+    mark: 884,
+    space: 324,
+    baud: 25,
+    sampleRate: 44100,
+    samplesPerFrame: 100
+  }
+
+  var e = fsk.createEncodeStream(opts)
+  var d = fsk.createDecodeStream(opts)
+
+  e
+    .pipe(d)
+    .pipe(concat(function (data) {
+      t.equal(data.toString(), 'woah, pretty neat!')
+      t.end()
+    }))
+  e.end('woah, pretty neat!')
+})
+
 test('extra long preamble', function (t) {
   var opts = {
     sampleRate: 8000,
@@ -98,14 +119,14 @@ test('extra long preamble', function (t) {
 
 test('high frequency', function (t) {
   var opts = {
-    sampleRate: 44100,
-    samplesPerFrame: 100,
+    sampleRate: 11025,
+    samplesPerFrame: 500,
     space: 324,
     mark: 884,
     baud: 1
   }
 
-  var msg = 'hello world!'.split('')
+  var msg = 'hey thar'.split('')
   var data = []
 
   writePreamble(opts, data)
@@ -121,7 +142,7 @@ test('high frequency', function (t) {
   })
 
   decoder.pipe(concat(function (data) {
-    t.equal(data.toString(), 'hello world!')
+    t.equal(data.toString(), 'hey thar')
     t.end()
   }))
 
