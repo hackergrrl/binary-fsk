@@ -55,13 +55,18 @@ test('basic', function (t) {
   }))
 })
 
-test('high baud high freq', function (t) {
+test('high baud', function (t) {
   var opts = {
-    mark: 884,
     space: 324,
-    baud: 25,
-    sampleRate: 44100,
-    samplesPerFrame: 100
+    mark: 884,
+    baud: 100,
+    sampleRate: 8000,
+    samplesPerFrame: 2000
+  }
+  opts.samplesPerFrame = getMinSamplesPerFrame(opts.sampleRate, opts.baud)
+
+  function getMinSamplesPerFrame (sampleRate, baud) {
+    return Math.floor(sampleRate / baud / 5)
   }
 
   var e = fsk.createEncodeStream(opts)
