@@ -4,6 +4,12 @@
 
 https://en.wikipedia.org/wiki/Frequency-shift_keying
 
+## STATUS
+
+Work-in-progress. Works great if you pipe the encoder to the decoder, but still
+working on getting it working well in noisy / real-world environments!
+
+
 ## Usage
 
 Let's encode the string 'Hello!' into sound waves and then back again to a
@@ -25,13 +31,17 @@ var opts = {
 var encode = fsk.createEncodeStream(opts)
 var decode = fsk.createDecodeStream(opts)
 
+// pipe to your speaker
 encode
   .pipe(speaker())
-  .pipe(microphone())
+
+// receive sound from your speaker and decode it back to text to print out
+microphone()
   .pipe(decode)
   .pipe(process.stdout)
 
-e.end('hello warld!')
+// write a message!
+e.end('heya!')
 ```
 
 This will make your computer scream garbage at you (make sure your speakers and
